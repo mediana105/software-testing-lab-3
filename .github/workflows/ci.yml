@@ -90,20 +90,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-      - name: Download Allure report
-        uses: actions/download-artifact@v4
+
+      - name: Generate Allure report
+        run: ./gradlew allureReport
+
+      - name: Publish Allure Report
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          name: allure-report
-      - name: Move report to publish directory
-        run: |
-          mkdir -p ./public
-          cp -r build/reports/allure-report/* ./public/
-      - name: Deploy to GitHub Pages
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./public
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./build/reports/allure-report
+          destination_dir: ./
