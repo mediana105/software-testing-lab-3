@@ -85,22 +85,27 @@ jobs:
             build/reports/spotbugs/test.html
             build/reports/spotbugs/main.xml
             build/reports/spotbugs/test.xml
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Make gradlew executable
-        run: chmod +x gradlew
+      - name: Load test report history
+        uses: actions/checkout@v3
+        if: always()
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
 
-      - name: Generate Allure report
-        run: ./gradlew allureReport
+      - name: Build test report
+        uses: simple-elf/allure-report-action@v1.7
+        if: always()
+        with:
+          gh_pages: gh-pages
+          allure_history: allure-history
+          allure_results: build/allure-results
 
-      - name: Publish Allure Report
+      - name: Publish test report
         uses: peaceiris/actions-gh-pages@v3
+        if: always()
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: ./build/reports/allure-report
-          destination_dir: ./
+          publish_dir: allure-history
