@@ -77,12 +77,30 @@ spotbugs {
     reportsDir = layout.buildDirectory.dir("reports/spotbugs")
 }
 
-tasks.named('spotbugsTest') {
+tasks.named('spotbugsMain') {
     reports {
-        html.enabled = true
-        xml.enabled = false
+        html {
+            enabled = true
+            destination = layout.buildDirectory.file("reports/spotbugs/test.html").get().asFile
+        }
+        xml {
+            enabled = true
+        }
     }
 }
+
+tasks.named('spotbugsTest') {
+    reports {
+        html {
+            enabled = true
+            destination = layout.buildDirectory.file("reports/spotbugs/test.html").get().asFile
+        }
+        xml {
+            enabled = true
+        }
+    }
+}
+
 
 
 
