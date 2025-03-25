@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
       - main
+
 env:
   JAVA_VERSION: '21'
 
@@ -26,8 +27,10 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
-      - run: chmod +x gradlew
-      - run: ./gradlew assemble
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+      - name: Build project
+        run: ./gradlew assemble
 
   test:
     needs: build
@@ -45,39 +48,40 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
-
-      - name: Run JUnit tests
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+      - name: Run tests
         run: ./gradlew test
-
-      - name: Generate JaCoCo report
-        run: ./gradlew jacocoTestReport
-
+      - name: Generate reports
+        run: |
+          ./gradlew jacocoTestReport
+          ./gradlew allureReport
+          ./gradlew spotbugsMain spotbugsTest
+      - name: Upload test reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: build/reports/tests/test/
       - name: Upload JaCoCo report
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
           path: |
-            build/reports/jacoco/test/html/**
+            build/reports/jacoco/test/html/
             build/reports/jacoco/jacocoTestReport.xml
-
-      - name: Generate Allure report
-        run: ./gradlew allureReport
-      - name: Upload Allure results
+      - name: Upload Allure report
         uses: actions/upload-artifact@v4
         with:
-          name: allure-results
+          name: allure-report
           path: |
             build/allure-results/
             build/reports/allure-report/
-
-      - name: Run SpotBugs analysis
-        run: ./gradlew spotbugsMain spotbugsTest
-      - name: Upload SpotBugs report
+      - name: Upload SpotBugs reports
         uses: actions/upload-artifact@v4
         with:
-          name: spotbugs-report
+          name: spotbugs-reports
           path: |
-            build/reports/spotbugs/test.xml
+            build/reports/spotbugs/main.html
             build/reports/spotbugs/test.html
             build/reports/spotbugs/main.xml
-            build/reports/spotbugs/main.html
+            build/reports/spotbugs/test.xml
