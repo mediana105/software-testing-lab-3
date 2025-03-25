@@ -85,3 +85,25 @@ jobs:
             build/reports/spotbugs/test.html
             build/reports/spotbugs/main.xml
             build/reports/spotbugs/test.xml
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Download Allure report
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-report
+      - name: Move report to publish directory
+        run: |
+          mkdir -p ./public
+          cp -r build/reports/allure-report/* ./public/
+      - name: Deploy to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
