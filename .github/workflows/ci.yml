@@ -18,7 +18,7 @@ jobs:
           distribution: 'temurin'
       - name: Make gradlew executable
         run: chmod +x gradlew
-      - name: Test with Gradle
+      - name: Junit test with Gradle
         run: ./gradlew test
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -36,7 +36,7 @@ jobs:
           path: |
             build/reports/jacoco/test/html/
             build/reports/jacoco/jacocoTestReport.xml
-      - name: Run tests with Allure
+      - name: Generate Allure report
         run: |
           ./gradlew clean test
           ./gradlew allureReport
@@ -57,3 +57,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: build/reports/allure-report
+          destination_dir: .
