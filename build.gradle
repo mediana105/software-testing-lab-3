@@ -81,7 +81,7 @@ tasks.named('spotbugsMain') {
     reports {
         html {
             enabled = true
-            destination = layout.buildDirectory.file("reports/spotbugs/test.html").get().asFile
+            destination = layout.buildDirectory.file("reports/spotbugs/main.html").get().asFile
         }
         xml {
             enabled = true
